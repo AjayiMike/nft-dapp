@@ -9,6 +9,7 @@ contract NFTToken is ERC721, Ownable{
     uint256 private _tokenIDCounter;
     string private baseURI;
     uint256 public immutable maxSupply;
+    mapping(address => bool) internal hasMinted;
 
     constructor(
         string memory name_, 
@@ -25,17 +26,18 @@ contract NFTToken is ERC721, Ownable{
         _tokenIDCounter++;
         uint256 newTokenID = _tokenIDCounter;
         _safeMint(to_, newTokenID);
-        console.log("minted a token with tokenID %i %s to address", newTokenID, to_);
         return newTokenID;
     }
 
     function mintToken() external payable returns(uint256) {
-        require(_tokenIDCounter < maxSupply, "NFTToken: no more token token to be minted!");
+        require(_tokenIDCounter < maxSupply, "NFTToken: no more token to be minted!");
         require(msg.value >= 0.1 ether, "a fee of at leaset 0.1 is required for minting a token");
+        // only allow one minting per account
+        require(!hasMinted[msg.sender], "You cannot mint more than once from this contract");
+        hasMinted[msg.sender] = true;
         _tokenIDCounter++;
         uint256 newTokenID = _tokenIDCounter;
         _safeMint(msg.sender, newTokenID);
-        console.log("minted a token with tokenID %i %s to address", newTokenID, msg.sender);
         return newTokenID;
     }
 
