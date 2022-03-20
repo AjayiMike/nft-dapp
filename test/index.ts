@@ -72,7 +72,7 @@ describe("NFTToken", function () {
     expect(await  nftToken.balanceOf(signer1.address)).to.equal(1);
   })
 
-  it("should revert when an account try to mint the second time", async () => {
+  it("should revert when the same account try to mint the second time", async () => {
     const [,signer1] = await ethers.getSigners();
     const mintTx = await nftToken.connect(signer1).mintToken({value: ethers.utils.parseEther("0.1")});
     await mintTx.wait()
